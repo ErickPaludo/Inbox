@@ -1,10 +1,16 @@
 package com.pldprojects.myinboxfsg;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // Força modo claro
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -34,18 +41,40 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        smartTabLayout = findViewById(R.id.viewPagerTab);
-        viewPager = findViewById(R.id.viewPager);
-        buttonProcessar = (Button)findViewById(R.id.buttonProcessa);
+       smartTabLayout = findViewById(R.id.viewPagerTab);
+      viewPager = findViewById(R.id.viewPager);
 
-        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
-                getSupportFragmentManager(), FragmentPagerItems.with(this)
-                .add("Itens", ItensFragment.class)
-                .add("Caixas", CaixasFragment.class)
-                .add("Pedidos", PedidosFragment.class)
-                .add("Processados", ProcessaFragment.class)
-                .create());
-        viewPager.setAdapter(adapter);
-        smartTabLayout.setViewPager(viewPager);
+     FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+             getSupportFragmentManager(), FragmentPagerItems.with(this)
+             .add("Itens", ItensFragment.class)
+             .add("Caixas", CaixasFragment.class)
+             .add("Pedidos", PedidosFragment.class)
+             .add("Processados", ProcessaFragment.class)
+             .create());
+     viewPager.setAdapter(adapter);
+     smartTabLayout.setViewPager(viewPager);
+
+//Solicita Permissão de Câmera
+        if (shouldAskPermissions())
+        {
+            askPermissions();
+        }
     }
+    protected boolean shouldAskPermissions()
+    {
+        // return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+        return (Build.VERSION.SDK_INT > 27);
+    }
+
+    @TargetApi(23)
+    protected void askPermissions()
+    {
+        String[] permissions =
+                {
+                        "android.permission.CAMERA"
+                };
+        int requestCode = 200;
+        requestPermissions(permissions, requestCode);
+    }
+
 }

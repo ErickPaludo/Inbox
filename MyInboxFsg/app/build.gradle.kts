@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("com.ogaclejapan.smarttablayout:library:2.0.0@aar")
     implementation("com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar")
     implementation(libs.appcompat)
