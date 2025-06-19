@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LeituraCodigoBarrasActivity"
+            android:name=".Fragments.Class.LeituraCodigoBarrasActivity"
             android:screenOrientation="landscape" />
     </application>
 

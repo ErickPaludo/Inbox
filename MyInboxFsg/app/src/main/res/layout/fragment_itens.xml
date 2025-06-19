@@ -100,26 +100,26 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/buttonCad"
                 android:layout_width="253dp"
                 android:layout_height="wrap_content"
                 android:text="Cadastrar" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Segundo Layout ocupando o espaço restante -->
+    <ScrollView
+        android:id="@+id/scrollContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
+        android:id="@+id/layoutItens"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="16dp" />
+    </ScrollView>
 
-        <GridView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:numColumns="2" />
-    </LinearLayout>
 
 </LinearLayout>

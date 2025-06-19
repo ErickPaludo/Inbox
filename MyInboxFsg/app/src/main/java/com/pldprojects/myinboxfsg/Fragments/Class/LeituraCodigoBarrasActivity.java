@@ -1,4 +1,4 @@
-package com.pldprojects.myinboxfsg;
+package com.pldprojects.myinboxfsg.Fragments.Class;
 
 import com.google.zxing.Result;
 import com.smartdevicesdk.barcodescanner.zxing.ZXingScannerView;
