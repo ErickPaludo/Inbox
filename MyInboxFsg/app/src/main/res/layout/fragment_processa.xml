@@ -1,34 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".Fragments.ProcessaFragment">
 
-    <!-- Primeiro Layout -->
+    <!-- Texto acima do primeiro Scroll -->
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Pedidos"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-    <!-- Segundo Layout ocupando o espaço restante -->
-    <LinearLayout
-        android:id="@+id/layoutTeste"
+    <!-- Primeiro ScrollView (Itens) -->
+    <ScrollView
+        android:id="@+id/scrollContainerItens"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp">
+        android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/textNumberPed"
+        <LinearLayout
+            android:id="@+id/layoutItens"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center" />
+    </ScrollView>
+
+    <!-- Texto acima do segundo Scroll -->
+
+    <!-- Segundo ScrollView (Pedidos) -->
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="N° Ped"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:id="@+id/scrollContainerPedidos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/layoutPedidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center" />
+    </ScrollView>
+
+    <!-- Dois botões lado a lado -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center">
 
         <Button
-            android:id="@+id/buttonProcessa"
-            android:layout_width="match_parent"
+            android:id="@+id/buttonCriarPed"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_weight="1"
+            android:text="Criar Pedido" />
 
+        <Button
+            android:id="@+id/buttonAtualizar"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Atualizar" />
     </LinearLayout>
 
 </LinearLayout>

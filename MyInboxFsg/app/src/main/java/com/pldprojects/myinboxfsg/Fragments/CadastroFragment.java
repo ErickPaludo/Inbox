@@ -2,6 +2,8 @@ package com.pldprojects.myinboxfsg.Fragments;
 
 import android.os.Bundle;
 
+import androidx.room.Room;
+
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.pldprojects.myinboxfsg.Fragments.Class.AppDatabase;
 import com.pldprojects.myinboxfsg.Fragments.Class.Util;
 import com.pldprojects.myinboxfsg.Models.Caixas;
 import com.pldprojects.myinboxfsg.Models.Itens;
@@ -35,6 +38,7 @@ public class CadastroFragment extends Fragment {
     Util util = new Util();
     Itens item;
     Caixas caixas;
+    AppDatabase db;
 
     boolean typecad = true;
 
@@ -53,6 +57,15 @@ public class CadastroFragment extends Fragment {
         buttonCad = view.findViewById(R.id.buttonCad);
         combo = view.findViewById(R.id.combo);
 
+        db = Room.databaseBuilder(
+                        requireContext(),
+                        AppDatabase.class,
+                        "meu_banco"
+                )
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
+
         List<String> itens = Arrays.asList("Cad. Itens", "Cad. Caixas");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -60,33 +73,37 @@ public class CadastroFragment extends Fragment {
                 android.R.layout.simple_spinner_item,
                 itens
         );
+        RetornaParaTabela();
+
 
         combo.setAdapter(adapter);
         combo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String itemSelecionado = parent.getItemAtPosition(position).toString();
+                LimpaTabela(); // sempre limpar antes
+
                 if (itemSelecionado.equals("Cad. Itens")) {
                     typecad = true;
-                    LimpaTabela();
                     layoutItem.setVisibility(View.VISIBLE);
                 } else {
                     typecad = false;
-                    LimpaTabela();
                     layoutItem.setVisibility(View.GONE);
+                    // (Você pode criar um RetornaParaTabelaCaixas() se quiser exibir caixas também)
                 }
-
+                RetornaParaTabela();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 typecad = true;
             }
-
         });
+
         buttonCad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RetornaParaTabela();
                 var listaValores = new ArrayList<String>();
                 if (typecad) {
                     listaValores.add(editNomeItem.getText().toString());
@@ -101,15 +118,18 @@ public class CadastroFragment extends Fragment {
                                 Double.parseDouble(editTextAltura.getText().toString()),
                                 Double.parseDouble(editTextLargura.getText().toString()),
                                 Double.parseDouble(editTextComprimento.getText().toString()));
+                        db.Dao().inserirItem(item);
                     } else {
                         caixas = new Caixas(Double.parseDouble(editTextAltura.getText().toString()),
                                 Double.parseDouble(editTextLargura.getText().toString()),
                                 Double.parseDouble(editTextComprimento.getText().toString()));
+                        db.Dao().inserirCaixa(caixas);
                     }
                     CriaItemNatela();
                 }
             }
         });
+
         return view;
     }
 
@@ -122,6 +142,32 @@ public class CadastroFragment extends Fragment {
         ));
         layoutPage.addView(novoBotao);
         LimpaTela();
+    }
+
+    private void RetornaParaTabela() {
+        LimpaTabela();
+        if (typecad) {
+            List<Itens> itensdb = db.Dao().listarTodosItens();
+            for (var obj : itensdb) {
+                CriaBtnItem(obj.toString());
+            }
+        } else {
+            List<Caixas> caixasdb = db.Dao().listarTodasCaixas();
+            for (var obj : caixasdb) {
+                CriaBtnItem(obj.toString());
+            }
+        }
+
+    }
+
+    private void CriaBtnItem(String valor) {
+        Button novoBotao = new Button(getContext());
+        novoBotao.setText(valor);
+        novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        layoutPage.addView(novoBotao);
     }
 
     private void LimpaTela() {

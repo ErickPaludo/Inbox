@@ -23,7 +23,6 @@ import com.pldprojects.myinboxfsg.Fragments.ProcessaFragment;
 public class MainActivity extends AppCompatActivity {
     private SmartTabLayout smartTabLayout;
     private ViewPager viewPager;
-
     private Button  buttonProcessar;
 
     @Override
@@ -42,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
      FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
              getSupportFragmentManager(), FragmentPagerItems.with(this)
-             .add("Cadastro", CadastroFragment.class)
-             .add("Pedidos", PedidosFragment.class)
+             .add("Cad. Itens", CadastroFragment.class)
+             .add("Cad. Peds", PedidosFragment.class)
              .add("Processados", ProcessaFragment.class)
              .create());
      viewPager.setAdapter(adapter);

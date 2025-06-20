@@ -1,22 +1,32 @@
 package com.pldprojects.myinboxfsg.Models;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-import com.pldprojects.myinboxfsg.Fragments.Class.Processos;
+@Entity
+public class Itens extends Objeto {
 
-public class Itens extends Objeto implements Processos<Itens> {
+    @PrimaryKey(autoGenerate = true)
+    public int id; // necessário em toda @Entity
+
     private String nome;
+
+    public Itens() {
+        // Construtor vazio exigido pelo Room
+    }
+
     public Itens(String nome, double altura, double largura, double comprimento) {
         super(altura, largura, comprimento);
         this.nome = nome;
     }
 
-    public String getNome(){return nome;}
-    public void setNome(String nome){this.nome = nome;}
+    public String getNome() {
+        return nome;
+    }
 
-    @Override
-    public boolean validaObjeto(Itens obj) {
-        return false;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     @NonNull
