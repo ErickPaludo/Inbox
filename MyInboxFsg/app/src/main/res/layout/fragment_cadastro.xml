@@ -1,32 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <!-- Primeiro Layout -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/textNomeItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nome do Item" />
-
-        <EditText
-            android:id="@+id/editNomeItem"
+        <Spinner
+            android:id="@+id/combo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/spiner_bord"
             android:padding="8dp" />
 
         <!-- Layout horizontal para os campos -->
+
+        <LinearLayout
+            android:id="@+id/layoutCampoItem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/textNomeItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nome do Item" />
+
+            <EditText
+                android:id="@+id/editNomeItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:padding="8dp" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

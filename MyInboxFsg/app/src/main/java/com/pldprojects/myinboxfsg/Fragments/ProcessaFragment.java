@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,12 +19,15 @@ import androidx.fragment.app.Fragment;
 import com.pldprojects.myinboxfsg.Fragments.Class.LeituraCodigoBarrasActivity;
 import com.pldprojects.myinboxfsg.R;
 
+import org.w3c.dom.Text;
+
 public class ProcessaFragment extends Fragment {
 
     private Button btnProcess;
     private TextView textNumberPed;
 
-    // ⬇️ Substituto moderno do startActivityForResult()
+
+
     private final ActivityResultLauncher<Intent> scannerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -49,6 +53,17 @@ public class ProcessaFragment extends Fragment {
             Intent intent = new Intent(getActivity(), LeituraCodigoBarrasActivity.class);
             scannerLauncher.launch(intent); // ⬅️ Chamada atual
         });
+
+        LinearLayout layout = view.findViewById(R.id.layoutTeste); // Um layout definido no XML
+
+        for (int i = 0; i < 5; i++) {
+            TextView textView = new TextView(getActivity());
+            textView.setText("Texto " + (i + 1));
+            textView.setTextSize(18);
+            textView.setPadding(20, 20, 20, 20);
+
+            layout.addView(textView); // Adiciona no layout
+        }
 
         return view;
     }

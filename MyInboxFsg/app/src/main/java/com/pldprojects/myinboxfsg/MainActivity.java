@@ -1,11 +1,8 @@
 package com.pldprojects.myinboxfsg;
 
 import android.annotation.TargetApi;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -19,8 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
-import com.pldprojects.myinboxfsg.Fragments.CaixasFragment;
-import com.pldprojects.myinboxfsg.Fragments.ItensFragment;
+import com.pldprojects.myinboxfsg.Fragments.CadastroFragment;
 import com.pldprojects.myinboxfsg.Fragments.PedidosFragment;
 import com.pldprojects.myinboxfsg.Fragments.ProcessaFragment;
 
@@ -46,8 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
      FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
              getSupportFragmentManager(), FragmentPagerItems.with(this)
-             .add("Itens", ItensFragment.class)
-             .add("Caixas", CaixasFragment.class)
+             .add("Cadastro", CadastroFragment.class)
              .add("Pedidos", PedidosFragment.class)
              .add("Processados", ProcessaFragment.class)
              .create());
