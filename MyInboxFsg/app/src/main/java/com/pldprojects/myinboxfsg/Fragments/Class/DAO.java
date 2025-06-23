@@ -28,4 +28,11 @@ public interface DAO {
 
     @Query("SELECT * FROM Pedidos")
     List<Pedidos> listarTodosPedidos();
+
+    @Query("SELECT * FROM Pedidos WHERE id = :id")
+    Pedidos buscarPedioPorId(int id);
+
+    @Query("SELECT * FROM Itens WHERE id = :id")
+    Itens buscarItensPorId(int id);
+
 }

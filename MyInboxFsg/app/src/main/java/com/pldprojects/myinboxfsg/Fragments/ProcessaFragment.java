@@ -20,16 +20,23 @@ import androidx.room.Room;
 import com.pldprojects.myinboxfsg.Fragments.Class.AppDatabase;
 import com.pldprojects.myinboxfsg.Fragments.Class.LeituraCodigoBarrasActivity;
 import com.pldprojects.myinboxfsg.Models.Itens;
+import com.pldprojects.myinboxfsg.Models.Pedidos;
 import com.pldprojects.myinboxfsg.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class ProcessaFragment extends Fragment {
 
     LinearLayout layoutItem;
     LinearLayout layoutPed;
+    TextView numped;
     Button btnCad;
     Button btnRecarrega;
     AppDatabase db;
@@ -37,12 +44,12 @@ public class ProcessaFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pedidos, container, false);
+        View view = inflater.inflate(R.layout.fragment_processa, container, false);
         layoutItem = view.findViewById(R.id.layoutItens);
         layoutPed = view.findViewById(R.id.layoutPedidos);
         btnCad = view.findViewById(R.id.buttonCriarPed);
         btnRecarrega = view.findViewById(R.id.buttonAtualizar);
-
+        numped = view.findViewById(R.id.textNumPed);
         db = Room.databaseBuilder(
                         requireContext(),
                         AppDatabase.class,
@@ -71,17 +78,17 @@ public class ProcessaFragment extends Fragment {
     private void RetornaParaTabela() {
         LimparTela();
 
-        List<Itens> itensdb = db.Dao().listarTodosItens();
-        for (var obj : itensdb) {
-            CriaBtnIten(obj);
+        List<Pedidos> pedidos = db.Dao().listarTodosPedidos();
+        for (var obj : pedidos) {
+            CriaBtnPed(obj);
         }
     }
 
-    private void CriaBtnIten(Itens obj) {
+    private void CriaBtnPed(Pedidos obj) {
 
         Button novoBotao = new Button(getContext());
         novoBotao.setId(obj.id);
-        String valor = obj.toString();
+        String valor = "Pedido n°:" + obj.id;
         novoBotao.setText(valor);
 
         novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
@@ -92,81 +99,46 @@ public class ProcessaFragment extends Fragment {
         novoBotao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View btnToRemove = layoutItem.findViewById(obj.id);
-                if (btnToRemove != null) {
-                    layoutItem.removeView(btnToRemove);
-                    CriaBtnPedido(obj);
-                }
+                CriaBtnItem(obj);
             }
         });
 
         layoutItem.addView(novoBotao);
     }
 
-    private void CriaBtnPedido(Itens obj) {
+    private void CriaBtnItem(Pedidos obj) {
 
-        Button novoBotao = new Button(getContext());
-        novoBotao.setId(obj.id);
-        String valor = obj.toString();
-        novoBotao.setText(valor);
+        numped.setText("N° Ped " + obj.id);
 
-        novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        ));
+        Pedidos pedidos = db.Dao().buscarPedioPorId(obj.id);
 
-        novoBotao.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View btnToRemove = layoutPed.findViewById(obj.id);
-                if (btnToRemove != null) {
-                    layoutPed.removeView(btnToRemove);
-                    CriaBtnIten(obj);
-                }
-            }
-        });
+        String[] separaid = obj.itens.split("\\^");
 
-        layoutPed.addView(novoBotao);
+        List<Integer> itemids = new ArrayList<>();
+
+        for (String parte : separaid) {
+            itemids.add(Integer.parseInt(parte));
+        }
+
+        ArrayList<Itens> itens = new ArrayList<Itens>();
+
+        for (var itemped : itemids) {
+            itens.add(db.Dao().buscarItensPorId(itemped));
+        }
+        layoutPed.removeAllViews();
+        for (var objitem : itens) {
+            Button novoBotao = new Button(getContext());
+            novoBotao.setId(obj.id);
+            String valor = objitem.toString();
+            novoBotao.setText(valor);
+
+            novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            layoutPed.addView(novoBotao);
+        }
+
     }
-  // private Button btnProcess;
-  // private TextView textNumberPed;
- //   private final ActivityResultLauncher<Intent> scannerLauncher = registerForActivityResult(
- //           new ActivityResultContracts.StartActivityForResult(),
- //           result -> {
- //               if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
- //                   String codigoBarras = result.getData().getStringExtra("SCAN_RESULT");
- //                   String formatoCodigo = result.getData().getStringExtra("SCAN_RESULT_FORMAT");
-//
- //                   if (!TextUtils.isEmpty(codigoBarras)) {
- //                       textNumberPed.setText(codigoBarras);
- //                   }
- //               }
- //           }
- //   );
-//
- //   @Nullable
- //   @Override
- //   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
- //                            @Nullable Bundle savedInstanceState) {
- //       View view = inflater.inflate(R.layout.fragment_processa, container, false);
- //       btnProcess = view.findViewById(R.id.buttonProcessa);
- //       textNumberPed = view.findViewById(R.id.textNumberPed);
- //       btnProcess.setOnClickListener(v -> {
- //           Intent intent = new Intent(getActivity(), LeituraCodigoBarrasActivity.class);
- //           scannerLauncher.launch(intent); // ⬅️ Chamada atual
- //       });
-//
- //       LinearLayout layout = view.findViewById(R.id.layoutTeste); // Um layout definido no XML
-//
- //       for (int i = 0; i < 5; i++) {
- //           TextView textView = new TextView(getActivity());
- //           textView.setText("Texto " + (i + 1));
- //           textView.setTextSize(18);
- //           textView.setPadding(20, 20, 20, 20);
-//
- //           layout.addView(textView); // Adiciona no layout
- //       }
-//
- //       return view;
- //   }
 }

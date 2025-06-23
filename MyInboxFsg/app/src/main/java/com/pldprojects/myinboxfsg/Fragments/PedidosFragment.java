@@ -62,10 +62,12 @@ public class PedidosFragment extends Fragment {
                     for (int i = 0; i < layoutPed.getChildCount(); i++) {
                         View child = layoutPed.getChildAt(i);
                         int id = child.getId();
-                        itemPed =+ id + "^";
+                        itemPed += id + "^";
                     }
                     db.Dao().inserirPedido(new Pedidos(itemPed));
                     RetornaParaTabela();
+                    Toast.makeText(getContext(), "Pedido salvo com sucesso!", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
