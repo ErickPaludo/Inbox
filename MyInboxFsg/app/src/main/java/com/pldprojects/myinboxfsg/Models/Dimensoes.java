@@ -1,6 +1,8 @@
 package com.pldprojects.myinboxfsg.Models;
 
-public class Dimensoes {
+import java.io.Serializable;
+
+public class Dimensoes implements Serializable {
     private double altura;
     private double largura;
     private double comprimento;

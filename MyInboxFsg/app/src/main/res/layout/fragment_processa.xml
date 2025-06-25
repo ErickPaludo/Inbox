@@ -68,11 +68,11 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/buttonCriarPed"
+            android:id="@+id/buttonSelecionaCaixa"
             android:layout_width="61dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Seleciona Caixa" />
+            android:text="Escolhe Caixa" />
 
         <Button
             android:id="@+id/buttonCriarPed2"

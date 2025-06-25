@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Itens extends Objeto {
+public class Itens extends Objeto implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     public int id; // necessário em toda @Entity

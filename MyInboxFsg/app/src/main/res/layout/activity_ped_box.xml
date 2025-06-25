@@ -1,10 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
+    android:id="@+id/main"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".PedBoxActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Texto acima do primeiro Scroll -->
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Pedidos"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Primeiro ScrollView (Itens) -->
+
+    <!-- Texto acima do ListView -->
+
+    <!-- ListView para mostrar os pedidos -->
+        <ListView
+        android:id="@+id/listViewPedidos"
+        android:layout_width="match_parent"
+        android:layout_height="596dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
+
+    <!-- Botões -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/buttonSelecionaCaixa"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Escolhe Caixa" />
+    </LinearLayout>
+
+</LinearLayout>

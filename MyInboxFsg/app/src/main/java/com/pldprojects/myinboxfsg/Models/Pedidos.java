@@ -7,8 +7,10 @@ import androidx.room.PrimaryKey;
 
 import com.pldprojects.myinboxfsg.Models.Itens;
 
+import java.io.Serializable;
+
 @Entity
-public class Pedidos {
+public class Pedidos implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id;
     public String itens;

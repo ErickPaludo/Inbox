@@ -89,7 +89,6 @@ public class CadastroFragment extends Fragment {
                 } else {
                     typecad = false;
                     layoutItem.setVisibility(View.GONE);
-                    // (Você pode criar um RetornaParaTabelaCaixas() se quiser exibir caixas também)
                 }
                 RetornaParaTabela();
             }
