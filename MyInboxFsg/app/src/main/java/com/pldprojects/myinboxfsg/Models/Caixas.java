@@ -23,6 +23,6 @@ public class Caixas extends Objeto implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return "(" + getAltura() + " x " + getComprimento() + " x " + getLargura() + ")";
+        return "(" + getAltura() + " x " + getLargura()+ " x " + getComprimento() + ")";
     }
 }

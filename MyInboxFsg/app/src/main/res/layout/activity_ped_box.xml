@@ -22,14 +22,15 @@
     <!-- Texto acima do ListView -->
 
     <!-- ListView para mostrar os pedidos -->
-        <ListView
+
+    <!-- Botões -->
+    <ListView
         android:id="@+id/listViewPedidos"
         android:layout_width="match_parent"
         android:layout_height="596dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp" />
 
-    <!-- Botões -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

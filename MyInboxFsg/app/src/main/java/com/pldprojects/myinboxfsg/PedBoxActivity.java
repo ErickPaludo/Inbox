@@ -54,18 +54,18 @@ public class PedBoxActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaitensviewtostring);
         listaitensview.setAdapter(adapter);
 
-        // Preencher a lista com os itens encaixados
-        for (Itens produto : listItens) {
-            Caixas caixa = encontrarMelhorCaixa(produto);
-            if (caixa != null) {
-                listcaixas.add(caixa);
-                caixasUsadasItens.add(new CaixaComItens(caixa, produto));
-                listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - " + caixa);
-            } else {
-                listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - Sem Caixa");
-            }
-        }
-        String msggroup = "";
+          for (Itens produto : listItens) {
+              Caixas caixa = encontrarMelhorCaixa(produto);
+              if (caixa != null) {
+                 // listcaixas.add(caixa);
+                  caixasUsadasItens.add(new CaixaComItens(caixa, produto));
+                //  listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - " + caixa);
+              } else {
+                  listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - Sem Caixa");
+              }
+          }
+          String msggroup = "";
+
         for (var caixas : listcaixas) {
             for (var itens : caixasUsadasItens) {
                 if (caixas.id == itens.getCaixa().id) {
@@ -73,7 +73,7 @@ public class PedBoxActivity extends AppCompatActivity {
                     msggroup += itens.getItens().toString() + "\n";
                 }
             }
-            if(!msggroup.equals("")) {
+            if (!msggroup.equals("")) {
                 listaitensviewtostring.add(msggroup);
                 msggroup = "";
             }
