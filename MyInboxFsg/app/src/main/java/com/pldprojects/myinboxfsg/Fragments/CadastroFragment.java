@@ -1,7 +1,17 @@
 package com.pldprojects.myinboxfsg.Fragments;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import androidx.fragment.app.Fragment;
@@ -39,6 +49,9 @@ public class CadastroFragment extends Fragment {
     Itens item;
     Caixas caixas;
     AppDatabase db;
+    private static int notificationId = 0;
+
+
 
     boolean typecad = true;
 
@@ -57,6 +70,16 @@ public class CadastroFragment extends Fragment {
         buttonCad = view.findViewById(R.id.buttonCad);
         combo = view.findViewById(R.id.combo);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel canal = new NotificationChannel(
+                    "canal_padrao",
+                    "Canal Padrão",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            NotificationManager manager = requireContext().getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(canal);
+        }
         db = Room.databaseBuilder(
                         requireContext(),
                         AppDatabase.class,
@@ -74,7 +97,6 @@ public class CadastroFragment extends Fragment {
                 itens
         );
         RetornaParaTabela();
-
 
         combo.setAdapter(adapter);
         combo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -118,11 +140,14 @@ public class CadastroFragment extends Fragment {
                                 Double.parseDouble(editTextLargura.getText().toString()),
                                 Double.parseDouble(editTextComprimento.getText().toString()));
                         db.Dao().inserirItem(item);
+                        mostrarNotificacao("Item criado com Sucesso!","Item Cadastrado:" + item.toString());
+
                     } else {
                         caixas = new Caixas(Double.parseDouble(editTextAltura.getText().toString()),
                                 Double.parseDouble(editTextLargura.getText().toString()),
                                 Double.parseDouble(editTextComprimento.getText().toString()));
                         db.Dao().inserirCaixa(caixas);
+                        mostrarNotificacao("Caixa cadastrada com Sucesso!","Caixa Cadastrada:" + caixas.toString());
                     }
                     CriaItemNatela();
                 }
@@ -178,5 +203,22 @@ public class CadastroFragment extends Fragment {
 
     private void LimpaTabela() {
         layoutPage.removeAllViews();
+    }
+
+    private void mostrarNotificacao(String tile,String msg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "canal_padrao")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(tile)
+                .setContentText(msg)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        notificationManager.notify(notificationId++, builder.build());
     }
 }

@@ -1,5 +1,6 @@
 package com.pldprojects.myinboxfsg.Fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
@@ -25,14 +27,8 @@ import com.pldprojects.myinboxfsg.Models.Pedidos;
 import com.pldprojects.myinboxfsg.PedBoxActivity;
 import com.pldprojects.myinboxfsg.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class ProcessaFragment extends Fragment {
 
@@ -42,20 +38,51 @@ public class ProcessaFragment extends Fragment {
     Button btnCad;
     Button btnRecarrega;
     Button buttonSelecionaCaixa;
+    Button buttonScanner;
     AppDatabase db;
-
-
+    private TextView textNumberPed;
     int ped = 0;
+
+    private final ActivityResultLauncher<Intent> scannerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Intent data = result.getData();
+                    String formatoCodigo = "";
+                    try {
+                        formatoCodigo = data.getStringExtra("SCAN_RESULT_FORMAT");
+                    } catch (Exception e) {
+                        e.printStackTrace(); // Loga o erro
+                    }
+
+                    if (!TextUtils.isEmpty(formatoCodigo)) {
+                        try {
+                            ped = Integer.valueOf(data.getStringExtra("SCAN_RESULT"));
+
+                            ChamaProcessamento();
+                        } catch (Exception ex) {
+                            ExibeMsg("Erro", "Cod inválido: " + data.getStringExtra("SCAN_RESULT"));
+
+                            RetornaParaTabela();
+                        }
+                    }
+                }
+            }
+    );
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_processa, container, false);
+
         layoutItem = view.findViewById(R.id.layoutItens);
         layoutPed = view.findViewById(R.id.layoutPedidos);
         buttonSelecionaCaixa = view.findViewById(R.id.buttonSelecionaCaixa);
         btnRecarrega = view.findViewById(R.id.buttonAtualizar);
         numped = view.findViewById(R.id.textNumPed);
+        buttonScanner = view.findViewById(R.id.buttonScanner);
+        textNumberPed = view.findViewById(R.id.textNumPed); // Referência para o TextView de exibição do código
+
         db = Room.databaseBuilder(
                         requireContext(),
                         AppDatabase.class,
@@ -64,39 +91,19 @@ public class ProcessaFragment extends Fragment {
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build();
+
         RetornaParaTabela();
 
-        btnRecarrega.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RetornaParaTabela();
-            }
+        buttonScanner.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), LeituraCodigoBarrasActivity.class);
+            scannerLauncher.launch(intent);
         });
 
-        buttonSelecionaCaixa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (layoutItem.getChildCount() > 0) {
-                    Pedidos pedidos = db.Dao().buscarPedioPorId(ped);
+        btnRecarrega.setOnClickListener(v -> RetornaParaTabela());
 
-                    Intent intent = new Intent(getActivity(), PedBoxActivity.class);
-                    intent.putExtra("pedidos", pedidos);
-
-                    ArrayList<Integer> itensid = new ArrayList<>(ItensPed(pedidos));
-                    ArrayList<Itens> listitens = new ArrayList<>();
-
-                    for (var obj : itensid) {
-                        listitens.add(db.Dao().buscarItensPorId(obj));
-                    }
-
-                    intent.putExtra("listitens", listitens);
-
-                    ArrayList<Caixas> listaCaixas = new ArrayList<>();
-                    listaCaixas = (ArrayList<Caixas>) db.Dao().listarTodasCaixas();
-                    intent.putExtra("listacaixas", listaCaixas);
-
-                    startActivity(intent);
-                }
+        buttonSelecionaCaixa.setOnClickListener(v -> {
+            if (layoutItem.getChildCount() > 0) {
+                ChamaProcessamento();
             }
         });
 
@@ -110,18 +117,19 @@ public class ProcessaFragment extends Fragment {
 
     private void RetornaParaTabela() {
         LimparTela();
+        ped = 0;
 
+        textNumberPed.setText("N° Ped");
         List<Pedidos> pedidos = db.Dao().listarTodosPedidos();
-        for (var obj : pedidos) {
+        for (Pedidos obj : pedidos) {
             CriaBtnPed(obj);
         }
     }
 
     private void CriaBtnPed(Pedidos obj) {
-
         Button novoBotao = new Button(getContext());
         novoBotao.setId(obj.id);
-        String valor = "Pedido n°:" + obj.id;
+        String valor = "Pedido n°: " + obj.id;
         novoBotao.setText(valor);
 
         novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
@@ -129,13 +137,7 @@ public class ProcessaFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
 
-        novoBotao.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CriaBtnItem(obj);
-            }
-        });
-
+        novoBotao.setOnClickListener(v -> CriaBtnItem(obj));
         layoutItem.addView(novoBotao);
     }
 
@@ -143,36 +145,74 @@ public class ProcessaFragment extends Fragment {
         ped = obj.id;
         numped.setText("N° Ped " + obj.id);
 
-        ArrayList<Itens> itens = new ArrayList<Itens>();
-
         List<Integer> itemids = ItensPed(obj);
-        for (var itemped : itemids) {
+        List<Itens> itens = new ArrayList<>();
+
+        for (int itemped : itemids) {
             itens.add(db.Dao().buscarItensPorId(itemped));
         }
+
         layoutPed.removeAllViews();
-        for (var objitem : itens) {
+
+        for (Itens objitem : itens) {
             Button novoBotao = new Button(getContext());
-            novoBotao.setId(obj.id);
-            String valor = objitem.toString();
-            novoBotao.setText(valor);
+            novoBotao.setId(objitem.id); // Corrigido: botão com ID do item
+            novoBotao.setText(objitem.toString());
             novoBotao.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             ));
             layoutPed.addView(novoBotao);
         }
-
     }
 
     private List<Integer> ItensPed(Pedidos pedItens) {
-
         String[] separaid = pedItens.itens.split("\\^");
-
         List<Integer> itemids = new ArrayList<>();
 
         for (String parte : separaid) {
-            itemids.add(Integer.parseInt(parte));
+            try {
+                itemids.add(Integer.parseInt(parte));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
         return itemids;
+    }
+
+    private void ChamaProcessamento() {
+        Pedidos pedidos = db.Dao().buscarPedioPorId(ped);
+        if (pedidos != null) {
+            Intent intent = new Intent(getActivity(), PedBoxActivity.class);
+            intent.putExtra("pedidos", pedidos);
+
+            ArrayList<Integer> itensid = new ArrayList<>(ItensPed(pedidos));
+            ArrayList<Itens> listitens = new ArrayList<>();
+
+            for (int id : itensid) {
+                listitens.add(db.Dao().buscarItensPorId(id));
+            }
+
+            intent.putExtra("listitens", listitens);
+
+            ArrayList<Caixas> listaCaixas = new ArrayList<>(db.Dao().listarTodasCaixas());
+            intent.putExtra("listacaixas", listaCaixas);
+
+            startActivity(intent);
+
+        } else {
+            if(ped != 0) {
+                ExibeMsg("Erro", "Pedido não Identificado");
+                RetornaParaTabela();
+            }
+        }
+    }
+
+    private void ExibeMsg(String title, String msg) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("OK", null)
+                .show();
     }
 }

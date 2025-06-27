@@ -1,7 +1,14 @@
 package com.pldprojects.myinboxfsg.Fragments;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
@@ -26,6 +33,8 @@ public class PedidosFragment extends Fragment {
     Button btnCad;
     Button btnRecarrega;
     AppDatabase db;
+    private static int notificationId = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,6 +44,17 @@ public class PedidosFragment extends Fragment {
         layoutPed = view.findViewById(R.id.layoutPedidos);
         btnCad = view.findViewById(R.id.buttonCriarPed);
         btnRecarrega = view.findViewById(R.id.buttonAtualizar);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel canal = new NotificationChannel(
+                    "canal_padrao",
+                    "Canal Padrão",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            NotificationManager manager = requireContext().getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(canal);
+        }
 
         db = Room.databaseBuilder(
                         requireContext(),
@@ -68,6 +88,10 @@ public class PedidosFragment extends Fragment {
                     RetornaParaTabela();
                     Toast.makeText(getContext(), "Pedido salvo com sucesso!", Toast.LENGTH_SHORT).show();
 
+                    var itensped = db.Dao().listarTodosPedidos();
+                    Pedidos p = itensped.get(itensped.size()-1);
+                    mostrarNotificacao("Pedido Gerado com Sucesso!","Pedido n° " + p.id
+                    + " foi criado.");
                 }
             }
         });
@@ -140,5 +164,20 @@ public class PedidosFragment extends Fragment {
 
         layoutPed.addView(novoBotao);
     }
+    private void mostrarNotificacao(String tile,String msg) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "canal_padrao")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(tile)
+                .setContentText(msg)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        notificationManager.notify(notificationId++, builder.build());
+    }
 }

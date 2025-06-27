@@ -3,6 +3,7 @@ package com.pldprojects.myinboxfsg;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -29,7 +30,6 @@ public class PedBoxActivity extends AppCompatActivity {
     ArrayList<Caixas> listcaixas = new ArrayList<>();
     ArrayList<CaixaComItens> caixasUsadasItens = new ArrayList<>();
     ListView listaitensview;
-
     ArrayList<String> listaitensviewtostring = new ArrayList<>();
     ArrayAdapter<String> adapter;
 
@@ -47,24 +47,23 @@ public class PedBoxActivity extends AppCompatActivity {
         pedidos = (Pedidos) getIntent().getSerializableExtra("pedidos");
         listItens = (ArrayList<Itens>) getIntent().getSerializableExtra("listitens");
         listcaixas = (ArrayList<Caixas>) getIntent().getSerializableExtra("listacaixas");
-
         listaitensview = findViewById(R.id.listViewPedidos);
 
         // Adaptador ligado à lista
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaitensviewtostring);
         listaitensview.setAdapter(adapter);
 
-          for (Itens produto : listItens) {
-              Caixas caixa = encontrarMelhorCaixa(produto);
-              if (caixa != null) {
-                 // listcaixas.add(caixa);
-                  caixasUsadasItens.add(new CaixaComItens(caixa, produto));
+        for (Itens produto : listItens) {
+            Caixas caixa = encontrarMelhorCaixa(produto);
+            if (caixa != null) {
+                // listcaixas.add(caixa);
+                caixasUsadasItens.add(new CaixaComItens(caixa, produto));
                 //  listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - " + caixa);
-              } else {
-                  listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - Sem Caixa");
-              }
-          }
-          String msggroup = "";
+            } else {
+                listaitensviewtostring.add("Item - " + produto.toString() + "\nCaixa - Sem Caixa");
+            }
+        }
+        String msggroup = "";
 
         for (var caixas : listcaixas) {
             for (var itens : caixasUsadasItens) {
